@@ -503,4 +503,4 @@ The `hasChildObject()` and `getChildObject()` methods are automatically added by
 ```
 
 ---
-<span class="next">[Next: Migrations &rarr;](09-migrations.html)</span>
+<span class="next">[Next: Les migrations &rarr;](09-migrations.html)</span>

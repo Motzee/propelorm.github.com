@@ -428,4 +428,4 @@ The `PropelPHPParser` class provides the following utility methods:
 * `addMethodBefore($methodName, $newCode)`
 
 ---
-<span class="next">[Next: Logging And Debugging &rarr;](07-logging.html)</span>
+<span class="next">[Next: Enregistrement de logs et débuguage &rarr;](07-logging.html)</span>

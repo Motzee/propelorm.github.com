@@ -5,20 +5,20 @@ title: Migrations
 
 # Les Migrations #
 
-During the life of a project, the Model seldom stays the same. New tables arise, and existing tables often need modifications (a new/modified column, a new index, another foreign key etc.). Updating the database structure accordingly, while preserving existing data, is a common concern. Propel met à disposition des outils permettant facilement la _migration_ d'une structure de base de données et de données.
+Au cours de la vie d'un projet, le Modèle de données reste rarement le même : de nouvelles tables apparaissent, et des tables existantes demandent parfois des modifications (changement d'une colonne, ajout d'un index, d'une clef étrangère...). Mettre à jour la structure de la base de données tout en préservant les données existantes est une préoccupation commune. Propel met à disposition des outils permettant facilement la _migration_ d'une structure de base de données et de données.
 
->**Tip**Les migrations avec Propel sont supportées avec MySQL, SQLite et PostgreSQL.
+>**Astuce**Les migrations avec Propel sont supportées sous MySQL, SQLite et PostgreSQL.
 
 ## Feuille de route pour une Migration ##
 
 Le processus pour une migration avec Propel est très simple :
 
 1. Editer le schéma XML pour modifier le modèle de la base de données
-2. Appeler la commande `diff` de Propel pour créer une classe de migration qui contiendra les instructions SQL permettant la modification de la structure de la base de donnnées
+2. Appeler la commande `diff` de Propel pour créer une classe de migration dans le dossier `generated-migrations` qui contiendra les instructions SQL permettant la modification de la structure de la base de donnnées
 3. Passer en revue la classe de migration ainsi générée, et ajuster le code si nécessaire
 4. Exécuter la migration en utilisant la commande `migrate` de Propel.
 
-Prenons un cas concret... Pour le site d'un libraire, un développeur crée un schéma xml avec une unique table  `book` :
+Prenons un cas concret... Pour le site d'un libraire, un développeur crée un schéma xml avec une unique table `book` :
 
 ```xml
 <database name="bookstore" defaultIdMethod="native">
@@ -82,9 +82,9 @@ DROP TABLE IF EXISTS `book`;
 }
 ```
 
->**Tip**On a project using version control, it is important to commit the migration classes to the code repository. That way, other developers checking out the project will just have to run the same migrations to get a database in a similar state.
+>**Astuce**Sur un projet utilisant un système de gestion de versions, il est important de commiter les classes de migration dans le repository. Ainsi, les autres développeurs décupérant le projet pourront appliquer les mêmes migrations et avoir une base de données à un stade identique.
 
-Now, to actually create the `book` table in the database, the developer has to call the `migrate` task:
+Pour appliquer la création de la table `book` table in the database, le développeur lance ensuite la commande `migrate` :
 
 ```bash
 $ propel migrate
@@ -94,9 +94,9 @@ $ propel migrate
 [propel-migration] Migration complete. No further migration to execute.
 ```
 
-The `book` table is now created in the database. It can be populated with data.
+La table `book` est maintenant ajoutée à la base de données, et peut accueillir des données.
 
-After a few days, the developer wants to add a new `author` table, with a foreign key in the `book` table. The schema is modified as follows:
+Après quelques jours, le développeur décide d'ajouter une nouvelle table `author`, vers laquelle pointe une foreign key portée par la table `book`. Le schéma XML est modifié ainsi :
 
 ```xml
 <database name="bookstore" defaultIdMethod="native">
@@ -117,7 +117,7 @@ After a few days, the developer wants to add a new `author` table, with a foreig
 </database>
 ```
 
-In order to update the database structure accordingly, the process is the same:
+Pour appliquer cette mise à jour à la structure de la base de données, le procédé est identique :
 
 ```bash
 $ propel diff
@@ -139,7 +139,7 @@ $ propel migrate
 [propel-migration] Migration complete. No further migration to execute.
 ```
 
-Propel has executed the `PropelMigration_1286484196::getUpSQL()` code, which alters the `book` structure _without removing data_:
+Propel a exécuté le code `PropelMigration_1286484196::getUpSQL()`, qui modifie la structure de la table `book` _sans supprimer les données qu'elle contient_:
 
 ```sql
 ALTER TABLE `book` ADD
@@ -164,19 +164,19 @@ CREATE TABLE `author`
 ) ENGINE=InnoDB;
 ```
 
->**Tip**`diff` and `migrate` often come one after the other, so you may want to execute them both in one call. That's possible, provided that the first argument of the `propel` script is the path to the current project:
+>**Astuce**`diff` et `migrate` sont souvent utilisés successivement ; il est possible d'exécuter les deux à la fois en précisant en premier argument de la commande `propel` le chemin vers le projet en cours :
 
 ```bash
 $ propel . diff migrate
 ```
 
-## Migration Tasks ##
+## Les tâches de migration ##
 
-The two basic migration tasks are `diff` and `migrate` - you already know them. `diff` creates a migration class, and `migrate` executes the migrations. But there are three more migration tasks that you will find very useful.
+Les deux migrations de base sont `diff` et `migrate` - vous les connaissez déjà. `diff` crée une classe de migration, tandis que `migrate` exécute ces migrations. Mais il y a aussi trois autres tâches de migration que vous trouverez certainement bien utiles.
 
-### Migration Up or Down, One At A Time ###
+### Migration Up ou Down, et One At A Time ###
 
-In the previous example, two migrations were executed. But the developer now wants to revert the last one. The `migration:down` task provides exactly this feature: it reverts only one migration.
+Dans l'exemple précédent, deux migrations étaient exécutées. Mais le développeur voudrait maintenant inverser la dernière qu'il a faite.La tâche `migration:down` propose justement cette option : cela permet d'annuler juste une migration.
 
 ```
 $ propel migration:down
@@ -186,7 +186,7 @@ $ propel migration:down
 [propel-migration-down] Reverse migration complete. 1 more migrations available for reverse.
 ```
 
-Notice that the `PropelMigration_1286484196` was executed _down_, not _up_ like the previous time. You can call this command several times to continue reverting the database structure, up to its original state:
+Notez que le fichier de migration `PropelMigration_1286484196` est alors exécuté en _down_, et non plus en _up_ comme lors de la précédente migration. Il est possible d'appeler plusieurs fois la commande pour annuler plusieurs migrations succesives et rendre à la structure de la base de données son état d'origine :
 
 ```bash
 $ propel migration:down
@@ -196,7 +196,7 @@ $ propel migration:down
 [propel-migration-down] Reverse migration complete. No more migration available for reverse
 ```
 
-As you may have guessed, the `migration:up` task does exactly the opposite: it executes the next migration up:
+Comme vous le supposez peut-être, la commande `migration:up` fait exactement l'opposé : elle exe: it executes the next migration up:
 
 ```bash
 $ propel migration:up

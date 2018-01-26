@@ -328,4 +328,4 @@ $author2 = AuthorQuery::create()->findPk(1);
 ```
 
 ---
-<span class="next">[Next: Relationships &rarr;](04-relationships.html)</span>
+<span class="next">[Next: Les relations &rarr;](04-relationships.html)</span>

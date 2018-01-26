@@ -6,25 +6,25 @@ title: Documentation
 
 # Documentation #
 
- * [What's New in Propel 2.0](whats-new.html) Users of previous versions can check the changes here.
+ * [Les nouveautés de Propel 2.0](whats-new.html) Utilisateurs des versions précédentes, découvrez ici les changements apportés par la version 2.
  * [Changelog](https://github.com/propelorm/Propel2/blob/master/UPDATE.md) Updates of the version 2.0.
  * [API Documentation](http://api.propelorm.org/) The generated API documentation.
 
 ## Project Setup ##
 
- * [Installing Propel](01-installation.html) Install Propel using Git, or a zipball/tarball.
- * [Building A Project](02-buildtime.html) Generate a PHP model based on a XML schema.
+ * [InstallerPropel](01-installation.html) Installer Propel en utilisant Git, ou un zipball/tarball.
+ * [Construire un projet](02-buildtime.html) Générer un modèle PHP basé sur un schéma XML.
 
-## Propel Basics ##
+## Les bases de Propel ##
 
-* [Basic CRUD](03-basic-crud.html) The basics of Propel C.R.U.D. (Create, Retrieve, Update, Delete) operations
-* [Relationships](04-relationships.html) Searching and manipulating data from related tables.
-* [Transactions](05-transactions.html) Where and when to use transactions.
-* [Behaviors](06-behaviors.html) The behavior system allows to package and reuse common model features.
-* [Logging And Debugging](07-logging.html) Propel can log a lot of information, including the SQL queries it executes.
+* [Le CRUD de base](03-basic-crud.html) Les bases de Propel pour faire les opérations du C.R.U.D.(Create, Retrieve, Update, Delete)
+* [Les relations](04-relationships.html) Rechercher et manipuler des données issues de tables relationnelles.
+* [Les transactions](05-transactions.html) Quand et où utiliser les trnasactions
+* [Behaviors](06-behaviors.html) Le système de comportement permet d'empaqueter et réutiliser des caractéristiques communes d'un modèle.
+* [Enregistrement de logs et débuguage](07-logging.html) Propel peut garder des traces de ce qu'il a fait (logs), notamment les commandes SQL qu'il a éxécutées.
 * [Inheritance](08-inheritance.html) Single Table Inheritance, Class Table Inheritance, and Concrete Table Inheritance come free with Propel.
-* [Migrations](09-migrations.html) Change the structure of the database without altering the data.
-* [Configuration](10-configuration.html) Configuring Propel
+* [Les migrations](09-migrations.html) Changer la structure de la base de données sans altérer les données.
+* [Configuration](10-configuration.html) Configurer Propel
 
 ## Reference ##
 
@@ -69,22 +69,22 @@ You can also look at [user contributed behaviors](../documentation/cookbook/user
 * [Using SQL Schemas](/documentation/cookbook/using-sql-schemas.html) How to organize tables into SQL schemas (only for MySQL, PostgreSQL, and MSSQL).
 * [Working With Existing Databases](/documentation/cookbook/working-with-existing-databases.html) How to build an XML schema from an existing db structure, how to dump data to XML, how to import it into a new database, etc.
 
-### Contribute to Propel ###
+### Contribuer à Propel ###
 
 * [Writing A Behavior](/documentation/cookbook/writing-behavior.html) How to write a custom behavior to reuse model code horizontally.
-* [Working Working with Propel's Test Suite](/documentation/cookbook/working-with-test-suite.html) How to work with Propel's test suite if you want to add a missing case or attach a regression test with your patch.
+* [Working with Propel's Test Suite](/documentation/cookbook/working-with-test-suite.html) How to work with Propel's test suite if you want to add a missing case or attach a regression test with your patch.
 
-### Working with Silex ###
+### Travailler avec Silex ###
 
-* [Working with Silex](/documentation/cookbook/silex/working-with-silex.html)
+* [Travailler avec Silex](/documentation/cookbook/silex/working-with-silex.html)
 
-### Working with Symfony2 ###
+### Travailler avec Symfony2 ###
 
-* [Working with Symfony2 (Introduction)](/documentation/cookbook/symfony2/working-with-symfony2.html)
-* [Mastering Symfony2 Forms With Propel](/documentation/cookbook/symfony2/mastering-symfony2-forms-with-propel.html)
-* [The Symfony2 Security Component And Propel](/documentation/cookbook/symfony2/the-symfony2-security-component-and-propel.html)
+* [Travailler avec Symfony2 (Introduction)](/documentation/cookbook/symfony2/working-with-symfony2.html)
+* [Maîtriser les formulaires sous Symfony2 grâce à Propel](/documentation/cookbook/symfony2/mastering-symfony2-forms-with-propel.html)
+* [Le composant de sécurité Symfony2 et Propel](/documentation/cookbook/symfony2/the-symfony2-security-component-and-propel.html)
 
->**Tip**This is the up-to-date documentation for the last Propel version.
-> To access the old documentation, please visit
-[trac.propelorm.org](http://trac.propelorm.org) or
+>**Astuce** Ceci est la documentation à jour pour la dernière version de Propel.
+> Pour accéder à l'ancienne documentation, vous pouvez consulter :
+[trac.propelorm.org](http://trac.propelorm.org) ou
 [propelorm.org/Propel](http://propelorm.org/Propel/).
