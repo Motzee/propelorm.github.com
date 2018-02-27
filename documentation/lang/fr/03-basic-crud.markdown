@@ -1,17 +1,17 @@
 ---
 layout: documentation
-title: Basic C.R.U.D. Operations
+title: Opérations basiques C.R.U.D.
 ---
 
-# Basic C.R.U.D. Operations #
+# Opérations basiques C.R.U.D. #
 
-In this chapter, you will learn how to perform basic C.R.U.D. (Create, Retrieve, Update, Delete) operations on your database using Propel.
+Dans ce chapitre, vous apprendrez comment effectuer les opérations basique du C.R.U.D (Create, Retrieve, Update, Delete) sur votre base de données via Propel.
 
-## Creating Rows ##
+## Ajouter des entrées (Create) ##
 
-To add new data to the database, instantiate a Propel-generated object and then call the `save()` method. Propel will generate the appropriate INSERT SQL from the instantiated object.
+Pour ajouter des données dans la base de données, instancier un objet grâce à Propel, puis appeler sa méthode `save()`. Propel exécutera alors la consigne SQL INSERT appropriée pour cet objet.
 
-But before saving it, you probably want to define the value for its columns. For that purpose, Propel has generated a `setXXX()` method for each of the columns of the table in the model object. So in its simplest form, inserting a new row looks like the following:
+Evidemment, avant de sauvegarder cet objet vous désirerez certainement l'hydrater pour attribuer des valeurs à ses différentes colonnes... Propel génère à cet effet des méthodes `setXXX()` pour chacune des colonnes de la table, méthodes définies dans le modèle de l'objet. Insérer une nouvelle entrée dans une table se fait simplement ainsi :
 
 ```php
 <?php
@@ -23,17 +23,17 @@ $author->setLastName('Austen');
 $author->save();
 ```
 
-The column names used in the `setXXX()` methods correspond to the `phpName` attribute of the `<column>` tag in your schema, or to a CamelCase version of the column name if the `phpName` is not set.
+Les noms de colonnes utilisés dans les méthodes `setXXX()` correspondent aux attributs `phpName` définis dans les balises `<column>` du schéma de la base de données, ou bien au nom de la colonne en écriture CamelCase si cet attribut `phpName` n'est pas défini.
 
-In the background, the call to `save()` results in the following SQL being executed on the database:
+L'utilisation de la méthode `save()` entrainera l'éxécution de la consigne SQL suivantes sur la base de données :
 
 ```sql
 INSERT INTO author (first_name, last_name) VALUES ('Jane', 'Austen');
 ```
 
-## Reading Object Properties ##
+## Consulter les propriétés d'un objet ##
 
-Propel maps the columns of a table into properties of the generated objects. For each property, you can use a generated getter to access it.
+Propel convertit les colonnes d'une table en propriétés pour l'objet généré. Pour chacune de ces propriétés, vous pouvez utiliser la méthode `getXXX()` générée pour en récupérer la valeur :
 
 ```php
 <?php
@@ -42,11 +42,11 @@ echo $author->getFirstName(); // 'Jane'
 echo $author->getLastName();  // 'Austen'
 ```
 
-The `id` column was set automatically by the database, since the `schema.xml` defines it as an `autoIncrement` column. The value is very easy to retrieve once the object is saved: just call the getter on the column phpName.
+La colonne `id` est automatiquement complétée par la base de données grâce à la définition de l'`autoIncrement` sur cette colonne dans le `schema.xml`. Une fois l'objet enregistré, il est aisé de récupérer cet identifiant simplement en utilisant son getter.
 
-These calls don't issue a database query, since the `Author` object is already loaded in memory.
+Ces appels de méthodes ne provoquent pas de nouvelle requête dans la base de données, car l'objet `Author` et ses propriétés est déjà chargé en mémoire.
 
-You can also export all the properties of an object by calling one of the following methods: `toArray()`, `toXML()`, `toYAML()`, `toJSON()`, `toCSV()`, and `__toString()`:
+Vous pouvez aussi exporter ces propriétés d'objet vers d'autres formats de données grâce aux méthodes suivantes :  `toArray()`, `toXML()`, `toYAML()`, `toJSON()`, `toCSV()`, et `__toString()`:
 
 ```php
 <?php
@@ -54,28 +54,28 @@ echo $author->toJSON();
 // {"Id":1,"FirstName":"Jane","LastName":"Austen"}
 ```
 
->**Tip**For each export method, Propel also provides an import method counterpart. So you can easily populate an object from an array using `fromArray()`, and from a string using any of `fromXML()`, `fromYAML()`, `fromJSON()`, and `fromCSV()`.
+>**Astuce** Pour chaque méthode d'export, Propel propose un import équivalent, ce qui vous permettra d'hydrater facilement un objet grâce à un tableau en utilisant la méthode `fromArray()`, ou bien grâce à une chaîne de caractères en utilisant les méthodes `fromXML()`, `fromYAML()`, `fromJSON()`, ou `fromCSV()`.
 
-There are a lot more useful methods offered by the generated objects. You can find an extensive  list of these methods in the [Active Record reference](/documentation/reference/active-record.html).
+De nombreuses méthodes tout aussi utiles vous sont offertes pour chaque objet généré. Une liste détaillée de ces méthodes est disponible dans la partie [Active Record reference](/documentation/reference/active-record.html).
 
-## Retrieving Rows ##
+## Lire des entrées (Read) ##
 
-Retrieving objects from the database, also referred to as _hydrating_ objects, is essentially the process of executing a SELECT query against the database and populating a new instance of the appropriate object with the contents of each returned row.
+Récupérer des objets issus de la base de données consiste essentiellement à faire exécuter une requête SELECT dans la base de données, permettant ainsi de créer pour chaque entrée une nouvelle instance de l'objet équivalant _hydraté_ avec les valeurs de cette ligne.
 
-In Propel, you use the generated Query objects to retrieve existing rows from the database.
+Sous Propel, il faudra passer par des classes Query générées pour chaque modèle d'objet afin de récupérer dans la base de données ces entrées attendues.
 
-### Retrieving by Primary Key ###
+### Récupération via une clef primaire (Primary key) ###
 
-The simplest way to retrieve a row from the database, is to use the generated `findPK()` method. It simply expects the value of the primary key of the row to be retrieved.
+La manière la plus simple de récupérer une entrée de la base de données est d'utiliser la méthode `findPK()` générée. Cette méthode attend simplement en paramètre la valeur de la clef promaire de l'entrée à retrouver.
 
 ```php
 <?php
 $q = new AuthorQuery();
 $firstAuthor = $q->findPK(1);
-// now $firstAuthor is an Author object, or NULL if no match was found.
+// $firstAuthor est maintenant un objet sur le modèle d'Author, ou bien vaudra NULL si aucune correspondance n'ets trouvée.
 ```
 
-This issues a simple SELECT SQL query. For instance, for MySQL:
+Ce code exécute simplement une requête SQL de type SELECT, qui serait par exemple traduit pour MySQL en :
 
 ```sql
 SELECT author.id, author.first_name, author.last_name
@@ -84,40 +84,40 @@ WHERE author.id = 1
 LIMIT 1;
 ```
 
-When the primary key consists of more than one column, `findPK()` accepts multiple parameters, one for each primary key column.
+Dans le cas où la clef primaire consisterait en plus d'une colonne, `findPK()` acceptera alors plusieurs paramètres : un pour chaque colonne portant une clef primaire.
 
->**Tip**Every generated Query objects offers a factory method called `create()`. This methods creates a new instance of the query, and allows you to write queries in a single line:
+>**Astuce** Chaque objet Query généré dispose d'une factory méthode `create()` créant une nouvelle instance de la requête, sur laquelle on pourra enchaîner sur une même ligne les méthodes permettant de compléter cette requête :
 
 >```php
 ><?php
 >$firstAuthor = AuthorQuery::create()->findPK(1);
 >```
 
-You can also select multiple objects based on their primary keys, by calling the generated `findPKs()` method. It takes an array of primary keys as a parameter:
+Il est possible de sélectionner plusieurs objets à la fois grâce à leur clef primaire en utilisant plutôt la méthode générée `findPKs()`, qui prend un tableau de clefs primires en paramètre :
 
 ```php
 <?php
 $selectedAuthors = AuthorQuery::create()->findPKs(array(1,2,3,4,5,6,7));
-// $selectedAuthors is a collection of Author objects
+// $selectedAuthors est une collection d'objets sur le modèle Author
 ```
 
-### Querying the Database ###
+### Interroger la base de données ###
 
-To retrieve rows other than by the primary key, use the Query `find()` method.
+En dehors de l'usage des clefs primaires, il est possible de récupérer des entrées dans la base de données en utilisant la méthode `find()` d'un objet Query.
 
-An empty Query object carries no condition, and returns all the rows of the table
+Sans paramètre indiqué, cette méthode renverra toutes les entrées de la table.
 
 ```php
 <?php
 $authors = AuthorQuery::create()->find();
-// $authors contains a collection of Author objects
-// one object for every row of the author table
+// $authors contient une collection d'objets instances d'Author
+// chaque objet représente une entrée dans la table author
 foreach($authors as $author) {
   echo $author->getFirstName();
 }
 ```
 
-To add a simple condition on a given column, use one of the generated `filterByXXX()` methods of the Query object, where `XXX` is a column phpName. Since `filterByXXX()` methods return the current query object, you can continue to add conditions or end the query with the result of the method call. For instance, to filter by first name:
+Pour ajouter un critère de recherche concernant une colonne donnée, utiliser les méthodes `filterByXXX()` générées pour l'objet Query, où `XXX` est le phpName d'une colonne. `filterByXXX()` retournant la requête d'objet écrite, il est possible d'ajouter des critères de recherche si besoin, avant de terminer et éxécuter cette requête avec `find()`. On pourra par exemple filtrer les auteurs portant le prénom Jane ainsi :
 
 ```php
 <?php
@@ -126,11 +126,11 @@ $authors = AuthorQuery::create()
   ->find();
 ```
 
-When you pass a value to a `filterByXXX()` method, Propel uses the column type to escape this value in PDO. This protects you from SQL injection risks.
+Les valeurs passées aux méthodes `filterByXXX()` sont systématiquement transformées en requêtes préparées via PDO, votre table est donc protégée des risques d'injection SQL.
 
->**Tip**`filterByXXX()` is the preferred method for creating queries. It is very flexible and accepts values with wildcards as well as arrays for more complex use cases. See [Column Filter Methods](/documentation/reference/model-criteria.html#column_filter_methods) for details.
+>**Astuce** `filterByXXX()` est la méthode à préférer pour créer des requêtes. Elle est flexible, et accepte en valeur autant des caractères génériques que des tableaux à des usages plus complexes. Consulter les [Méthodes de filtre de colonne](/documentation/reference/model-criteria.html#column_filter_methods) pour de plus amples détails.
 
-You can also easily limit and order the results on a query. Once again, the Query methods return the current Query object, so you can easily chain them:
+Vous pouvez facilement limiter ou ordonner les résultats d'une requête. Les méthodes de l'objet Query retournant la requête en cours de rédaction, il est facile de les enchainer ainsi :
 
 ```php
 <?php
@@ -140,7 +140,7 @@ $authors = AuthorQuery::create()
   ->find();
 ```
 
-`find()` always returns a collection of objects, even if there is only one result. If you know that you need a single result, use `findOne()` instead of `find()`. It will add the limit and return a single object instead of an array:
+`find()` retourne systématiquement une collection d'objets, même s'il n'y a qu'un seul résultat obtenu. Ainsi, si vous savez que vous n'obtiendrez qu'un seul résultat, utilisez plutôt la méthode `findOne()`. Cela limitera la requête à un résultat et renverra un seul objet au lieu d'un tableau :
 
 ```php
 <?php
