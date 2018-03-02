@@ -149,20 +149,20 @@ $author = AuthorQuery::create()
   ->findOne();
 ```
 
->**Tip**Propel provides magic methods for this simple use case. So you can write the above query as:
+>**Astuce** Pour ce cas simple, Propel dispose d'une  méthode magique. Vous pouvez ainsi convertir l'exemple ci-dessus en :
 
 ```php
 <?php
 $author = AuthorQuery::create()->findOneByFirstName('Jane');
 ```
 
-The Propel Query API is very powerful. The next chapter will teach you to use it to add conditions on related objects. If you can't wait, jump to the [Query API reference](/documentation/reference/model-criteria.html).
+L'API de requêtage de Propel est particulièrement complète. Dans le chapitre suivant, vous apprendrez comment l'utiliser pour ajouter des conditions on related objects. Pour vous y rendre directement, consultez [Query API reference](/documentation/reference/model-criteria.html).
 
-### Using Custom SQL ###
+### Utiliser des requêtes SQL maison ###
 
-The `Query` class provides a relatively simple approach to constructing a query. Its database neutrality and logical simplicity make it a good choice for expressing many common queries. However, for a very complex query, it may prove more effective (and less painful) to simply use a custom SQL query to hydrate your Propel objects.
+La classe `Query` permet de construire une requête de manière simple. Sa neutralité et sa simplicité logique en font un bon choix pour les requêtes les plus courantes. Cependant, pour des requêtes particulièrement complexes, il pourra être plus efficace (et moins difficile) d'utiliser une requête SQL personnalisée pour hydrater vos objets Propel.
 
-As Propel uses PDO to query the underlying database, you can always write custom queries using the PDO syntax. For instance, if you have to use a sub-select:
+Propel utilisant PDO pour interroger la base de données, vous pouvez contniuer d'utiliser des requêtes écrites en syntaxe PDO. Par exemple, si vous devez imbriquer des SELECTs :
 
 ```php
 <?php
@@ -176,7 +176,9 @@ $stmt = $con->prepare($sql);
 $stmt->execute(array(':name' => 'Austen'));
 ```
 
-With only a little bit more work, you can also populate `Book` objects from the resulting statement. Create a new `ObjectFormatter` for the `Book` model, and call the `format()` method using the `DataFetcher` instance of the current connection with the pdo statement:
+Avec un peu plus d'efforts seulement, vous pourrez aussi populate `Book` objects from the resulting statement. 
+
+Pour cela, créer un nouvel `ObjectFormatter` pour le modèle de classe `Book`, et appeler la méthode `format()` en passant en paramètre l'instance `DataFetcher` de la connexion à la base de données :
 
 ```php
 <?php
@@ -185,18 +187,17 @@ $con = Propel::getWriteConnection(\Map\BookTableMap::DATABASE_NAME);
 $formatter = new ObjectFormatter();
 $formatter->setClass('\Book'); //full qualified class name
 $books = $formatter->format($con->getDataFetcher($stmt));
-// $books contains a collection of Book objects
+// $books contient une collection d'objets sur le modèle Book
 ```
 
-There are a few important things to remember when using custom SQL to populate Propel:
-
+Pour utiliser des requêtes SQL maison avec Propel, il faut garder à l'esprit les choses suivantes :
 * The resultset columns must be numerically indexed
 * The resultset must contain all the columns of the table (except lazy-load columns)
 * The resultset must have columns _in the same order_ as they are defined in the `schema.xml` file
 
-## Updating Objects ##
+## Modifier des objets (Update) ##
 
-Updating database rows basically involves retrieving objects, modifying the contents, and then saving them. In practice, for Propel, this is a combination of what you've already seen in the previous sections:
+Modifier des entrées consiste simplement à en récupérer les objets pour en modifier les propriétés avant de les sauvegarder. Sous propel, cette suite d'opérations est une combinaison de ce qui a déjà été évoqué jusqu'ici :
 
 ```php
 <?php
@@ -205,7 +206,7 @@ $author->setLastName('Austen');
 $author->save();
 ```
 
-Alternatively, you can update several rows based on a Query using the query object's `update()` method:
+Si votre but est de modifier plusieurs entrée de manière similaire, vous pourrez utiliser comme alternative la méthode `update()` disponible pour les objets Query :
 
 ```php
 <?php
@@ -214,11 +215,11 @@ AuthorQuery::create()
   ->update(array('LastName' => 'Austen'));
 ```
 
-This last method is better for updating several rows at once, or if you didn't retrieve the objects before.
+Cette méthode est à privilégier pour éditer plusieurs entrées à la fois ou bien si les objets n'avaient pas été récupérés avant.
 
-## Deleting Objects ##
+## Supprimer des objets (Delete) ##
 
-Deleting objects works the same as updating them. You can either delete an existing object:
+Supprimer des objets se fait de la même méthode que l'édition. Ainsi, pour supprimer un objet existant, faites :
 
 ```php
 <?php
@@ -226,7 +227,7 @@ $author = AuthorQuery::create()->findOneByFirstName('Jane');
 $author->delete();
 ```
 
-Or use the `delete()` method in the query:
+Cette méthode `delete()` peut aussi être utilisée directement dans la requête :
 
 ```php
 <?php
@@ -235,7 +236,7 @@ AuthorQuery::create()
   ->delete();
 ```
 
->**Tip**A deleted object still lives in the PHP code. It is marked as deleted and cannot be saved anymore, but you can still read its properties:
+>**Astuce** Un objet supprimé continue d'exister dans le code PHP. Il est identifié comme supprimé et ne peut donc plus être sauvegardé, mais il reste possible d'en consuter les propriétés :
 
 ```php
 <?php
@@ -243,45 +244,45 @@ echo $author->isDeleted();    // true
 echo $author->getFirstName(); // 'Jane'
 ```
 
-## Query Termination Methods ##
+## Les méthodes de terminaison de requête ##
 
-The Query methods that don't return the current query object are called "Termination Methods". You've already seen some of them: `find()`, `findOne()`, `update()`, `delete()`. There are two more termination methods that you should know about:
+Les méthodes des objets Query ne renvoyant pas de requête en cours de construction sont appelées des "méthodes de terminaison" ("Termination Methods" en V.O.). Vous avez déjà croisé certaines d'entre elles : `find()`, `findOne()`, `update()`, `delete()`. Deux méthodes de terminaison supplémentaires sont à connaître :
 
-`count()` returns the number of results of the query.
+`count()` renvoit le nombre de résultats d'une requête.
 
 ```php
 <?php
 $nbAuthors = AuthorQuery::create()->count();
 ```
-You could also count the number of results from a `find()`, but that would be less effective, since it implies hydrating objects just to count them.
+Il serait possible de compter le nombre de résultats depuis un `find()` obtenu, mais cela serait moins performant puisque cela nécessiterait une hydratation des objets inutile pour ce comptage.
 
-`paginate()` returns a paginated list of results:
+`paginate()` renvoie une liste paginée de résultats :
 
 ```php
 <?php
 $authorPager = AuthorQuery::create()->paginate($page = 1, $maxPerPage = 10);
-// This method will compute an offset and a limit
-// based on the number of the page and the max number of results per page.
-// The result is a PropelModelPager object, over which you can iterate:
+// Cette méthode prend en paramètres un repère de début et une limite
+// qui corespondent respectivement au numéro de page et au nombre maximal de résultats attendus par page.
+// Le résultat obtenu sera un objet itérable de modèle PropelModelPager :
 foreach ($authorPager as $author) {
   echo $author->getFirstName();
 }
 ```
 
-A pager object gives more information:
+Un objet modèle PropelModelPager dispose de méthodes spécifiques fournissant plus d'informations :
 
 ```php
 <?php
-echo $pager->getNbResults();   // total number of results if not paginated
-echo $pager->haveToPaginate(); // return true if the total number of results exceeds the maximum per page
-echo $pager->getFirstIndex();  // index of the first result in the page
-echo $pager->getLastIndex();   // index of the last result in the page
-$links = $pager->getLinks(5);  // array of page numbers around the current page; useful to display pagination controls
+echo $pager->getNbResults();   // nombre total de résultats sans tenir compte de la pagination
+echo $pager->haveToPaginate(); // renvoie true si le nombre précédent est supérieur au nombre de résultats maximal attendu par page
+echo $pager->getFirstIndex();  // index du premier résultat de la page
+echo $pager->getLastIndex();   // index du dernier résultat de la page
+$links = $pager->getLinks(5);  // tableau des numéros de page autour du numéro de page actuel, bien utile pour l'affichage de la pagination
 ```
 
-## Collections And On-Demand Hydration ##
+## Les collections et l'hydratation sur demande ##
 
-The `find()` method of generated Model Query objects returns a `PropelCollection` object. You can use this object just like an array of model objects, iterate over it using `foreach`, access the objects by key, etc.
+La méthode `find()` des objets sur le modèle Query renvoie un objet itérable de type `PropelCollection`, utilisable comme un tableau d'objets : vous pouvez utiliser une boucle `foreach` pour accéder aux objets contenus, et exploiter leurs méthodes :
 
 ```php
 <?php
@@ -293,20 +294,20 @@ foreach ($authors as $author) {
 }
 ```
 
-The advantage of using a collection instead of an array is that Propel can hydrate model objects on demand. Using this feature, you'll never fall short of memory when retrieving a large number of results. Available through the `setFormatter()` method of Model Queries, on-demand hydration is very easy to trigger:
+L'utilisation de collections plutôt que de tableaux classiques permet à Propel d'hydrater les modèles d'objet sur demande. En exploitant cette fonctionnalité, vous ne serez jamais plus à court de mémoire lors d'une récupération massive de résultats. Utilisable via la méthode `setFormatter()` du modèle Query, l'hydratation sur demande se met en place assez simplement :
 
 ```php
 <?php
 $authors = AuthorQuery::create()
   ->limit(50000)
-  ->setFormatter(ModelCriteria::FORMAT_ON_DEMAND) // just add this line
+  ->setFormatter(ModelCriteria::FORMAT_ON_DEMAND) // ajouter simplement cette ligne dans la requête
   ->find();
 foreach ($authors as $author) {
   echo $author->getFirstName();
 }
 ```
 
-In this example, Propel will hydrate the `Author` objects row by row, after the `foreach` call, and reuse the memory between each iteration. The consequence is that the above code won't use more memory when the query returns 50,000 results than when it returns 5.
+Dans l'exemple ci-dessus, Propel hydratera les objets `Author` entrées par entrée _dans_ la boucle `foreach`, réuitlisant la mémoire à chaque itération. Ainsi, le code ci-dessus n'utilisera pas plus de mémoire pour récupérer 50 000 résultats qu'il n'en utilise pour 5.
 
 `ModelCriteria::FORMAT_ON_DEMAND` is one of the many formatters provided by the Query objects. You can also get a collection of associative arrays instead of objects, if you don't need any of the logic stored in your model object, by using `ModelCriteria::FORMAT_ARRAY`.
 
